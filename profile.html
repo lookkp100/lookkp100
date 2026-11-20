@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الملف الشخصي والإعدادات — منصة الواهس والتركيز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--surface:#111a2e;--surface-2:#18243d;--line:#243352;--text:#e6ecf8;--muted:#8fa0c0;--emerald:#34d399;--purple:#a78bfa;--sky:#38bdf8;--danger:#f87171;--r-lg:20px;--r-md:12px;--r-sm:8px}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.7;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{cursor:not-allowed;opacity:.5}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:var(--r-md);font-weight:600;transition:.2s;text-decoration:none}
+.btn-primary{background:var(--emerald);color:#052e22}
+.btn-primary:hover:not(:disabled){filter:brightness(1.1)}
+.btn-purple{background:var(--purple);color:#1e1147}
+.btn-ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover:not(:disabled){border-color:var(--sky)}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.4)}
+.btn-sm{padding:6px 12px;font-size:.85rem}
+.icon-btn{width:42px;height:42px;display:grid;place-items:center;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+#topbar{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#topbar .container{display:flex;align-items:center;gap:10px;height:64px}
+.brand{font-weight:700;margin-inline-end:auto}
+.field{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 14px}
+.field:disabled{opacity:.55}
+label.lbl{display:block;font-weight:600;margin:14px 0 6px;font-size:.92rem}
+.hint{color:var(--muted);font-size:.82rem;margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.section{margin:30px 0}
+.section>h2{font-size:1.2rem;margin-bottom:12px}
+.tabs{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:4px;gap:4px}
+.tab{flex:1;padding:10px;border-radius:var(--r-sm);color:var(--muted);font-weight:600}
+.tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 -2px 0 var(--purple)}
+.progress-bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--sky))}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.badge.sky{color:var(--sky);border-color:rgba(56,189,248,.4)}
+input[type=checkbox]{accent-color:var(--emerald);width:18px;height:18px}
+#modal-overlay{position:fixed;inset:0;background:rgba(3,7,18,.65);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+#modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{position:fixed;inset-inline:16px;top:50%;transform:translateY(-46%);max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;z-index:50;opacity:0;pointer-events:none;transition:.22s;max-height:88vh;overflow:auto}
+.modal.open{opacity:1;pointer-events:auto;transform:translateY(-50%)}
+.modal h2{margin-bottom:6px;font-size:1.15rem}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.setting-row:last-child{border-bottom:0}
+.setting-row select{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:6px 10px}
+#toast{position:fixed;bottom:20px;inset-inline:0;margin:0 auto;width:max-content;max-width:90vw;background:var(--surface-2);border:1px solid var(--emerald);padding:10px 18px;border-radius:99px;opacity:0;transition:.3s;z-index:60;pointer-events:none}
+#toast.show{opacity:1}
+.empty{color:var(--muted);text-align:center;padding:20px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.view{display:none;margin-top:16px}
+.view.active{display:block}
+.profile-head{display:flex;align-items:center;gap:14px}
+.avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--sky));display:grid;place-items:center;font-weight:700;font-size:1.4rem;color:#0b1220;flex:none}
+.share-row{display:flex;gap:8px;margin-top:10px}
+#profile-link{direction:ltr;text-align:left;flex:1;min-width:0}
+.req{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.req:last-child{border-bottom:0}
+.req .avatar{width:40px;height:40px;font-size:1rem}
+.req .name{flex:1}
+.room-pill{display:inline-block;margin:4px 0 0 6px;padding:4px 12px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);font-size:.88rem}
+.private-box{display:flex;gap:8px;align-items:center;color:var(--muted);background:var(--surface-2);border-radius:var(--r-md);padding:12px;margin-top:10px}
+.done-list{list-style:none;padding:0;display:grid;gap:6px;margin-top:10px}
+.done-list li{background:var(--surface-2);border-radius:var(--r-sm);padding:6px 12px;font-size:.92rem}
+.done-list li::before{content:"✓ ";color:var(--emerald)}
+.danger-zone{border-color:rgba(248,113,113,.4)}
+.danger-zone h2{color:var(--danger)}
+.sim{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;margin-top:12px}
+</style>
+</head>
+<body>
+<header id="topbar"><div class="container">
+  <a class="icon-btn" href="index.html" aria-label="الرجوع للرئيسية"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+  <div class="brand">الملف الشخصي والإعدادات</div>
+  <a class="btn btn-purple btn-sm" href="bootcamp.html">المعسكر</a>
+</div></header>
+
+<main class="container">
+  <div class="tabs" id="profile-tabs" style="margin-top:20px">
+    <button class="tab active" id="tab-mine" data-view="view-mine">حسابي</button>
+    <button class="tab" id="tab-visitor" data-view="view-visitor">معاينة الزائر</button>
+  </div>
+
+  <!-- ===== حسابي ===== -->
+  <div class="view active" id="view-mine">
+    <section class="card" id="share-card">
+      <div class="profile-head">
+        <div class="avatar" id="my-avatar">ط</div>
+        <div><h2 id="my-name">طالب السادس</h2><span class="badge">السادس الإعدادي</span></div>
+      </div>
+      <label class="lbl" for="profile-link">رابط حسابك القابل للمشاركة</label>
+      <div class="share-row">
+        <input class="field" id="profile-link" readonly value="جاري تحميل الرابط...">
+        <button class="btn btn-primary" id="btn-copy-link">نسخ الرابط</button>
+      </div>
+    </section>
+
+    <section class="section" id="friend-requests-section">
+      <h2>طلبات الصداقة الواردة <span class="badge sky" id="requests-count"></span></h2>
+      <div class="card" id="friend-requests-list"></div>
+    </section>
+
+    <section class="section" id="settings">
+      <h2>الإعدادات</h2>
+      <div class="card">
+        <div class="setting-row">
+          <label for="setting-display-name">الاسم الظاهر</label>
+          <div style="display:flex;gap:8px">
+            <input class="field" id="setting-display-name" placeholder="اكتب اسمك" style="max-width:190px">
+            <button class="btn btn-primary btn-sm" id="btn-save-name">حفظ</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="privacy">
+      <h2>إعدادات الخصوصية</h2>
+      <div class="card">
+        <div class="setting-row">
+          <div><strong>شريط التقدم والنسبة المئوية</strong><div class="hint">من يستطيع رؤية تقدمك</div></div>
+          <select id="privacy-progress"><option value="friends">الأصدقاء فقط</option><option value="none">لا أحد</option></select>
+        </div>
+        <div class="setting-row">
+          <div><strong>قائمة مهام المواضيع المنجزة</strong><div class="hint">من يستطيع رؤية ما أنجزته</div></div>
+          <select id="privacy-topics"><option value="friends">الأصدقاء فقط</option><option value="none">لا أحد</option></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="danger-zone-section">
+      <div class="card danger-zone">
+        <h2>منطقة الخطر</h2>
+        <p class="hint" style="margin:0 0 12px">حذف الحساب نهائي ولا يمكن استرجاعه.</p>
+        <button class="btn btn-danger" id="btn-delete-account">حذف الحساب نهائياً</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== معاينة الزائر ===== -->
+  <div class="view" id="view-visitor">
+    <section class="card" id="visitor-card">
+      <div class="profile-head">
+        <div class="avatar" id="visitor-avatar">ط</div>
+        <div style="flex:1"><h2 id="visitor-name">طالب السادس</h2><span class="badge">السادس الإعدادي</span></div>
+      </div>
+      <button class="btn btn-primary" id="btn-send-friend-request" style="margin-top:14px;width:100%">➕ إرسال طلب صداقة</button>
+      <label class="sim" id="sim-wrapper"><input type="checkbox" id="sim-is-friend">محاكاة: الزائر صديق (لاختبار الخصوصية)</label>
+    </section>
+    <section class="section"><h2>الغرف المشترك بها</h2><div id="visitor-rooms"></div></section>
+    <section class="section"><h2>التقدم</h2><div class="card" id="visitor-progress"></div></section>
+    <section class="section"><h2>المواضيع المنجزة</h2><div class="card" id="visitor-topics"></div></section>
+  </div>
+</main>
+
+<div id="modal-overlay"></div>
+<div class="modal" id="modal-delete" role="dialog" aria-label="تأكيد حذف الحساب">
+  <h2>حذف الحساب نهائياً؟</h2>
+  <p class="hint">ستُحذف بياناتك وتقدمك وغرفك وصداقاتك. للتأكيد اكتب كلمة «حذف».</p>
+  <input class="field" id="delete-confirm-input" placeholder="حذف" style="margin-top:12px">
+  <div class="modal-actions">
+    <button class="btn btn-danger" id="btn-confirm-delete" disabled>تأكيد الحذف</button>
+    <button class="btn btn-ghost" id="btn-cancel-delete">إلغاء</button>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {
+  auth, db, SUBJECTS_DATA, resolveTopicTitle,
+  loginWithGoogle, ensureUserDoc, deleteUserAccountCompletely, onAuthStateChanged,
+  doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where,
+  onSnapshot, serverTimestamp, arrayUnion
+} from "./firebase-init.js";
+
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400)}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const subjName = id => SUBJECTS_DATA.find(s=>s.id===id)?.name || id;
+const TOTAL_TOPICS = SUBJECTS_DATA.reduce((acc, s) => acc + s.chapters.reduce((a, c) => a + c.topics.length, 0), 0);
+
+const queryId = new URLSearchParams(location.search).get('id');
+let currentUser = null;
+let myProfile = null;
+let targetProfile = null;
+let targetUid = null;
+let isExternalVisitor = false;
+let friendRequests = [];
+let requestSent = false;
+let unsubRequests = null;
+
+/* ===== Tabs ===== */
+function showView(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===id));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
+if(location.hash==='#settings'||location.hash==='#privacy')setTimeout(()=>$(location.hash.slice(1)).scrollIntoView(),80);
+
+/* ===== Auth State & Profile Loading ===== */
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (unsubRequests) { unsubRequests(); unsubRequests = null; }
+
+  // تحديد هل الزائر يفتح رابط طالب آخر أم حسابه الشخصي
+  if (queryId && (!user || queryId !== user.uid)) {
+    isExternalVisitor = true;
+    targetUid = queryId;
+    $('profile-tabs').style.display = 'none';
+    $('sim-wrapper').style.display = 'none';
+    showView('view-visitor');
+    await loadExternalProfile(targetUid);
+    return;
+  }
+
+  if (!user) {
+    try { await loginWithGoogle(); }
+    catch {
+      $('my-name').textContent = "يرجى تسجيل الدخول";
+      $('profile-link').value = "سجّل دخولك لعرض رابط حسابك";
+    }
+    return;
+  }
+
+  isExternalVisitor = false;
+  targetUid = user.uid;
+  myProfile = await ensureUserDoc(user);
+  targetProfile = myProfile;
+
+  const shareUrl = `${location.origin}${location.pathname}?id=${user.uid}`;
+  $('profile-link').value = shareUrl;
+  $('my-name').textContent = myProfile.displayName || "طالب السادس";
+  $('my-avatar').textContent = (myProfile.displayName || "ط")[0];
+  $('setting-display-name').value = myProfile.displayName || "";
+  $('privacy-progress').value = myProfile.privacy?.progress || "friends";
+  $('privacy-topics').value = myProfile.privacy?.topics || "friends";
+
+  // الاستماع لطلبات الصداقة الواردة
+  const q = query(collection(db, "friend_requests"), where("toUid", "==", user.uid));
+  unsubRequests = onSnapshot(q, (snap) => {
+    friendRequests = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+    renderRequests();
+  });
+
+  renderVisitor();
+});
+
+async function loadExternalProfile(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) {
+    $('visitor-name').textContent = "الحساب غير موجود";
+    $('btn-send-friend-request').disabled = true;
+    return;
+  }
+  targetProfile = snap.data();
+  if (currentUser) {
+    const reqSnap = await getDoc(doc(db, "friend_requests", `${currentUser.uid}_${uid}`));
+    requestSent = reqSnap.exists();
+  }
+  renderVisitor();
+}
+
+/* ===== Share link ===== */
+$('btn-copy-link').onclick=async()=>{
+  try{await navigator.clipboard.writeText($('profile-link').value);toast('تم نسخ الرابط')}
+  catch(e){$('profile-link').select();toast('حدد الرابط وانسخه يدوياً')}
+};
+
+/* ===== Friend requests ===== */
+function renderRequests(){
+  $('requests-count').textContent=friendRequests.length||'';
+  $('friend-requests-list').innerHTML=friendRequests.length?friendRequests.map(r=>`
+    <div class="req" data-request-id="${r.docId}"><div class="avatar">${esc((r.fromName||'ط')[0])}</div><span class="name">${esc(r.fromName||'طالب')}</span>
+    <button class="btn btn-primary btn-sm" data-accept="${r.docId}" data-from="${r.fromUid}">قبول</button>
+    <button class="btn btn-ghost btn-sm" data-reject="${r.docId}">رفض</button></div>`).join('')
+    :'<p class="empty">لا توجد طلبات صداقة جديدة.</p>';
+
+  document.querySelectorAll('[data-accept]').forEach(b=>b.onclick=async()=>{
+    const fromUid = b.dataset.from, reqId = b.dataset.accept;
+    try {
+      await updateDoc(doc(db, "users", currentUser.uid), { friends: arrayUnion(fromUid) });
+      await updateDoc(doc(db, "users", fromUid), { friends: arrayUnion(currentUser.uid) });
+      await deleteDoc(doc(db, "friend_requests", reqId));
+      toast('تمت إضافة الصديق');
+    } catch (e) { toast('تعذر قبول الطلب'); }
+  });
+
+  document.querySelectorAll('[data-reject]').forEach(b=>b.onclick=async()=>{
+    try {
+      await deleteDoc(doc(db, "friend_requests", b.dataset.reject));
+      toast('تم رفض الطلب');
+    } catch (e) { toast('تعذر رفض الطلب'); }
+  });
+}
+
+/* ===== Settings & Privacy ===== */
+$('btn-save-name').onclick = async () => {
+  if (!currentUser) return;
+  const n = $('setting-display-name').value.trim();
+  if (!n) { toast('اكتب اسماً صحيحاً'); return; }
+  await updateDoc(doc(db, "users", currentUser.uid), { displayName: n });
+  myProfile.displayName = n;
+  $('my-name').textContent = n;
+  $('my-avatar').textContent = n[0];
+  renderVisitor();
+  toast('تم حفظ الاسم');
+};
+
+$('privacy-progress').onchange = async (e) => {
+  if (!currentUser) return;
+  myProfile.privacy = { ...(myProfile.privacy || {}), progress: e.target.value };
+  await updateDoc(doc(db, "users", currentUser.uid), { "privacy.progress": e.target.value });
+  renderVisitor();
+  toast('تم حفظ الخصوصية');
+};
+
+$('privacy-topics').onchange = async (e) => {
+  if (!currentUser) return;
+  myProfile.privacy = { ...(myProfile.privacy || {}), topics: e.target.value };
+  await updateDoc(doc(db, "users", currentUser.uid), { "privacy.topics": e.target.value });
+  renderVisitor();
+  toast('تم حفظ الخصوصية');
+};
+
+/* ===== Visitor view ===== */
+const lockBox=msg=>`<div class="private-box"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>${msg}</div>`;
+
+function renderVisitor(){
+  if (!targetProfile) return;
+  const name = targetProfile.displayName || "طالب السادس";
+  $('visitor-name').textContent = name;
+  $('visitor-avatar').textContent = name[0];
+
+  const isFriend = isExternalVisitor
+    ? (currentUser && (targetProfile.friends || []).includes(currentUser.uid))
+    : $('sim-is-friend').checked;
+
+  const rooms = (targetProfile.joinedRooms || []).map(r => `${subjName(r.subject)} — غرفة (${r.room === 'A' ? 'أ' : 'ب'})`);
+  $('visitor-rooms').innerHTML = rooms.length
+    ? rooms.map(r => `<span class="room-pill">${esc(r)}</span>`).join('')
+    : '<p class="hint">غير مشترك في غرف عامة حالياً.</p>';
+
+  const btn = $('btn-send-friend-request');
+  if (!isExternalVisitor) {
+    btn.textContent = '➕ إرسال طلب صداقة (معاينة)';
+    btn.disabled = true;
+  } else {
+    btn.textContent = isFriend ? '✓ أصدقاء' : requestSent ? 'تم إرسال الطلب' : '➕ إرسال طلب صداقة';
+    btn.disabled = isFriend || requestSent;
+  }
+
+  const progSetting = targetProfile.privacy?.progress || 'friends';
+  const topicsSetting = targetProfile.privacy?.topics || 'friends';
+  const canProg = isFriend && progSetting === 'friends';
+  const canTopics = isFriend && topicsSetting === 'friends';
+
+  const doneKeys = targetProfile.platformDone || [];
+  const pct = TOTAL_TOPICS ? Math.round((doneKeys.length / TOTAL_TOPICS) * 100) : 0;
+
+  $('visitor-progress').innerHTML = canProg
+    ? `<div style="display:flex;align-items:center;gap:12px"><div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:${pct}%"></div></div><strong>${pct}%</strong></div>`
+    : lockBox(progSetting === 'none' ? 'صاحب الحساب أخفى تقدمه.' : 'التقدم يظهر للأصدقاء فقط.');
+
+  $('visitor-topics').innerHTML = canTopics
+    ? (doneKeys.length
+        ? `<ul class="done-list" id="visitor-done-list">${doneKeys.map(k => `<li>${esc(resolveTopicTitle(k))}</li>`).join('')}</ul>`
+        : '<p class="hint">لم ينجز أي موضوع بعد.</p>')
+    : lockBox(topicsSetting === 'none' ? 'صاحب الحساب أخفى المواضيع المنجزة.' : 'المواضيع المنجزة تظهر للأصدقاء فقط.');
+}
+
+$('btn-send-friend-request').onclick = async () => {
+  if (!isExternalVisitor || !targetUid) return;
+  if (!currentUser) {
+    try { await loginWithGoogle(); }
+    catch { toast('سجّل دخولك أولاً لإرسال طلب صداقة'); return; }
+  }
+  if (currentUser.uid === targetUid) { toast('هذا حسابك الشخصي'); return; }
+  const mySnap = await ensureUserDoc(currentUser);
+  await setDoc(doc(db, "friend_requests", `${currentUser.uid}_${targetUid}`), {
+    fromUid: currentUser.uid,
+    fromName: mySnap.displayName || currentUser.displayName || "طالب",
+    toUid: targetUid,
+    createdAt: serverTimestamp()
+  });
+  requestSent = true;
+  renderVisitor();
+  toast('تم إرسال طلب الصداقة');
+};
+
+$('sim-is-friend').onchange = renderVisitor;
+
+/* ===== Delete account ===== */
+const dm=$('modal-delete'),ov=$('modal-overlay');
+function closeDelete(){dm.classList.remove('open');ov.classList.remove('open');$('delete-confirm-input').value='';$('btn-confirm-delete').disabled=true}
+$('btn-delete-account').onclick=()=>{dm.classList.add('open');ov.classList.add('open')};
+$('btn-cancel-delete').onclick=closeDelete;ov.onclick=closeDelete;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDelete()});
+$('delete-confirm-input').oninput=e=>{$('btn-confirm-delete').disabled=e.target.value.trim()!=='حذف'};
+$('btn-confirm-delete').onclick=async()=>{
+  if(!currentUser)return;
+  try {
+    await deleteUserAccountCompletely(currentUser);
+    closeDelete();
+    toast('تم حذف حسابك نهائياً');
+    setTimeout(()=>location.href='index.html',1000);
+  } catch (e) {
+    toast('حدث خطأ أثناء حذف الحساب: ' + e.message);
+  }
+};
+</script>
+</body>
+</html>

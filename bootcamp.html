@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>معسكر الدراسة والغرف — منصة الواهس والتركيز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--surface:#111a2e;--surface-2:#18243d;--line:#243352;--text:#e6ecf8;--muted:#8fa0c0;--emerald:#34d399;--purple:#a78bfa;--sky:#38bdf8;--danger:#f87171;--r-lg:20px;--r-md:12px;--r-sm:8px}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.7;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{cursor:not-allowed;opacity:.5}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:var(--r-md);font-weight:600;transition:.2s;text-decoration:none}
+.btn-primary{background:var(--emerald);color:#052e22}
+.btn-primary:hover:not(:disabled){filter:brightness(1.1)}
+.btn-purple{background:var(--purple);color:#1e1147}
+.btn-ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover:not(:disabled){border-color:var(--sky)}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.4)}
+.btn-sm{padding:6px 12px;font-size:.85rem}
+.icon-btn{width:42px;height:42px;display:grid;place-items:center;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+#topbar{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#topbar .container{display:flex;align-items:center;gap:10px;height:64px}
+.brand{font-weight:700;margin-inline-end:auto}
+.field{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 14px}
+.field:disabled{opacity:.55}
+label.lbl{display:block;font-weight:600;margin:14px 0 6px;font-size:.92rem}
+.hint{color:var(--muted);font-size:.82rem;margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.section{margin:30px 0}
+.section>h2{font-size:1.2rem;margin-bottom:12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.chip{padding:6px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.chip.active{border-color:var(--sky);color:var(--sky)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.badge.emerald{color:var(--emerald);border-color:rgba(52,211,153,.4)}
+.badge.sky{color:var(--sky);border-color:rgba(56,189,248,.4)}
+input[type=checkbox],input[type=radio]{accent-color:var(--emerald);width:18px;height:18px}
+#modal-overlay{position:fixed;inset:0;background:rgba(3,7,18,.65);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+#modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{position:fixed;inset-inline:16px;top:50%;transform:translateY(-46%);max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;z-index:50;opacity:0;pointer-events:none;transition:.22s;max-height:88vh;overflow:auto}
+.modal.open{opacity:1;pointer-events:auto;transform:translateY(-50%)}
+.modal h2{margin-bottom:6px;font-size:1.15rem}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+#toast{position:fixed;bottom:20px;inset-inline:0;margin:0 auto;width:max-content;max-width:90vw;background:var(--surface-2);border:1px solid var(--emerald);padding:10px 18px;border-radius:99px;opacity:0;transition:.3s;z-index:60;pointer-events:none}
+#toast.show{opacity:1}
+.empty{color:var(--muted);text-align:center;padding:20px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:26px 0 4px}
+.page-head h1{font-size:1.5rem}
+#seats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.seat{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r-md);padding:12px;min-height:84px}
+.seat small{color:var(--muted);display:block}
+.seat.filled{border-style:solid;border-color:var(--emerald);background:rgba(52,211,153,.07)}
+.seat.monthly.filled{border-color:var(--purple);background:rgba(167,139,250,.08)}
+.seat strong{display:block}
+.rooms-grid{display:grid;gap:12px}
+@media(min-width:720px){.rooms-grid{grid-template-columns:1fr 1fr}}
+.room-card{display:grid;gap:8px}
+.room-card h3{font-size:1.05rem}
+.room-meta{color:var(--muted);font-size:.9rem}
+.room-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.lock-note{color:var(--muted);font-size:.85rem;display:flex;gap:6px;align-items:center}
+.list-edit{list-style:none;padding:0;display:grid;gap:6px;margin:8px 0}
+.list-edit li{display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:var(--r-sm);padding:6px 12px;font-size:.92rem}
+.list-edit li span{flex:1}
+.add-row{display:flex;gap:8px}
+.radio-row{display:flex;gap:10px;flex-wrap:wrap}
+.radio-opt{flex:1;min-width:150px;display:flex;gap:8px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);padding:10px}
+.dates{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:520px){.dates{grid-template-columns:1fr}}
+#rescue-card{position:relative;overflow:hidden;text-align:center;padding:30px 16px;border-style:dashed;opacity:.8}
+#rescue-card .lock{width:46px;height:46px;margin:0 auto 10px;display:grid;place-items:center;border-radius:50%;background:var(--surface-2);color:var(--muted)}
+</style>
+</head>
+<body>
+<header id="topbar"><div class="container">
+  <a class="icon-btn" href="index.html" aria-label="الرجوع للرئيسية"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+  <div class="brand">معسكر الدراسة والغرف</div>
+  <a class="icon-btn" href="profile.html" aria-label="الملف الشخصي"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
+</div></header>
+
+<main class="container">
+  <div class="page-head">
+    <h1>اختر غرفتك وابدأ</h1>
+    <button class="btn btn-primary" id="btn-create-room">➕ إنشاء غرفة خاصة</button>
+  </div>
+
+  <!-- مقاعدي -->
+  <section class="section" id="seats-section">
+    <h2>مقاعدي (3 كحد أقصى)</h2>
+    <div id="seats-bar"></div>
+    <p class="hint" id="seats-hint"></p>
+  </section>
+
+  <!-- غرفي الخاصة -->
+  <section class="section" id="my-rooms-section">
+    <h2>غرفي الخاصة</h2>
+    <div class="rooms-grid" id="my-rooms-list"></div>
+  </section>
+
+  <!-- غرف عامة -->
+  <section class="section" id="public-rooms-section">
+    <h2>غرف عامة</h2>
+    <div class="chips" id="subject-bar"></div>
+    <div class="rooms-grid" id="public-rooms-list"></div>
+  </section>
+
+  <!-- غرف الإنقاذ -->
+  <section class="section" id="rescue-section">
+    <div class="card" id="rescue-card">
+      <div class="lock"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <span class="badge">⏳ غرف الإنقاذ للمتأخرين — تُفتح تلقائياً قبل الامتحان الوزاري بـ 100 يوم</span>
+    </div>
+  </section>
+</main>
+
+<!-- نافذة إنشاء/تعديل غرفة -->
+<div id="modal-overlay"></div>
+<div class="modal" id="modal-room" role="dialog" aria-label="إعدادات الغرفة">
+  <h2 id="room-modal-title">إنشاء غرفة خاصة</h2>
+  <label class="lbl" for="room-name">اسم الغرفة</label>
+  <input class="field" id="room-name" maxlength="40" placeholder="مثال: نخبة الفيزياء">
+
+  <label class="lbl" for="room-subject">عنوان المادة</label>
+  <select class="field" id="room-subject"></select>
+  <p class="lock-note" id="subject-lock" hidden><svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>لا يمكن تغيير المادة بعد إنشاء الغرفة</p>
+
+  <label class="lbl" for="room-task-input">المهام على طول المدة</label>
+  <div class="add-row"><input class="field" id="room-task-input" placeholder="مثال: الفصل الأول الأعداد المركبة"><button class="btn btn-ghost" id="btn-add-room-task" type="button">إضافة</button></div>
+  <p class="hint" id="tasks-note">يفضل كتابة المواضيع المطلوبة بشكل مهام ثانية (مثل عدم كتابة الفصل الأول فقط بل اكتب: الفصل الأول الأعداد المركبة، الفصل الأول [اسم الموضوع الثاني] وهكذا)</p>
+  <p class="hint" id="tasks-lock" hidden>في وضع التعديل يمكنك إضافة مهام جديدة فقط دون حذف السابقة.</p>
+  <ul class="list-edit" id="room-task-list"></ul>
+
+  <label class="lbl">توقيت الغرفة</label>
+  <div class="dates">
+    <div><small class="hint">تاريخ البداية</small><input class="field" type="date" id="room-start"></div>
+    <div><small class="hint">تاريخ النهاية</small><input class="field" type="date" id="room-end"></div>
+    <div><small class="hint">موعد الامتحان</small><input class="field" type="date" id="room-exam"></div>
+  </div>
+
+  <label class="lbl">امتحانات فرعية قبل النهائي (اختياري)</label>
+  <div class="add-row"><input class="field" type="date" id="subexam-date"><button class="btn btn-ghost" id="btn-add-subexam" type="button">إضافة موعد</button></div>
+  <ul class="list-edit" id="subexam-list"></ul>
+
+  <label class="lbl">صاحب صناعة الامتحان النهائي</label>
+  <div class="radio-row" id="exam-owner-group">
+    <label class="radio-opt"><input type="radio" name="exam-owner" value="platform" checked>مالك المنصة</label>
+    <label class="radio-opt"><input type="radio" name="exam-owner" value="room-owner">مالك الغرفة يصنعه وينشره</label>
+  </div>
+  <p class="lock-note" id="owner-lock" hidden><svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>لا يمكن تغيير صاحب الامتحان بعد الإنشاء</p>
+
+  <div class="modal-actions">
+    <button class="btn btn-primary" id="btn-save-room">إنشاء الغرفة</button>
+    <button class="btn btn-ghost" id="btn-cancel-room">إلغاء</button>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {
+  auth, db, SUBJECTS_DATA, loginWithGoogle, ensureUserDoc, onAuthStateChanged,
+  doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where,
+  serverTimestamp, arrayUnion, increment
+} from "./firebase-init.js";
+
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400)}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const SUBJECTS = SUBJECTS_DATA;
+const subjName = id => SUBJECTS.find(s=>s.id===id)?.name || id;
+let currentUser = null;
+let myRooms = [];
+let joined = [];
+let roomCounts = {};
+let activeSubject = SUBJECTS[0].id;
+const MAX_BIWEEKLY = 2;
+
+async function requireAuth() {
+  if (currentUser) return true;
+  try { await loginWithGoogle(); return true; }
+  catch (e) { toast('يرجى تسجيل الدخول بحساب Google أولاً'); return false; }
+}
+
+/* ===== Auth & Load Data ===== */
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    const data = await ensureUserDoc(user);
+    joined = data.joinedRooms || [];
+    await loadPrivateRooms();
+    await checkInviteRoomParam();
+  } else {
+    joined = [];
+    myRooms = [];
+  }
+  await loadPublicRoomCounts();
+  refreshAll();
+  renderMyRooms();
+});
+
+async function checkInviteRoomParam() {
+  const inviteRoomId = new URLSearchParams(location.search).get('room');
+  if (!inviteRoomId || !currentUser) return;
+  const rSnap = await getDoc(doc(db, "private_rooms", inviteRoomId));
+  if (rSnap.exists()) {
+    const rData = rSnap.data();
+    if (!rData.members?.includes(currentUser.uid)) {
+      await updateDoc(doc(db, "private_rooms", inviteRoomId), {
+        members: arrayUnion(currentUser.uid)
+      });
+      toast(`تمت إضافتك إلى غرفة "${rData.name}"`);
+      await loadPrivateRooms();
+      renderMyRooms();
+    }
+  }
+}
+
+async function loadPrivateRooms() {
+  if (!currentUser) return;
+  const q = query(collection(db, "private_rooms"), where("members", "array-contains", currentUser.uid));
+  const snap = await getDocs(q);
+  myRooms = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function loadPublicRoomCounts() {
+  try {
+    const snap = await getDocs(collection(db, "public_rooms_stats"));
+    roomCounts = {};
+    snap.forEach(d => { roomCounts[d.id] = d.data().membersCount || 0; });
+  } catch (e) { /* تجاهل إذا كانت فارغة */ }
+}
+
+/* ===== Seats ===== */
+const hasMonthly=()=>joined.some(j=>j.type==='monthly');
+const biCount=()=>joined.filter(j=>j.type==='biweekly').length;
+function renderSeats(){
+  const m=joined.find(j=>j.type==='monthly'),bi=joined.filter(j=>j.type==='biweekly');
+  const seat=(label,j,cls)=>`<div class="seat ${cls} ${j?'filled':''}"><small>${label}</small>${j?`<strong>${subjName(j.subject)}</strong><small>غرفة (${j.room==='A'?'أ':'ب'})</small>`:'<strong style="color:var(--muted)">مقعد متاح</strong>'}</div>`;
+  $('seats-bar').innerHTML=seat('غرفة شهرية',m,'monthly')+seat('نظام أسبوعين',bi[0],'bi')+seat('نظام أسبوعين',bi[1],'bi');
+  $('seats-hint').textContent=joined.length>=3?'اكتملت مقاعدك. غادر غرفة أو أنهِ مدتها لتنضم لغيرها.':`متبقي لك ${3-joined.length} من 3 مقاعد.`;
+}
+
+/* ===== Public rooms ===== */
+const dFmt=d=>d.toLocaleDateString('ar-IQ',{day:'numeric',month:'long'});
+function publicRooms(){
+  const n=new Date(),y=n.getFullYear(),m=n.getMonth();
+  return [
+    {key:'A',title:'غرفة (أ)',from:new Date(y,m,1),to:new Date(y,m,30)},
+    {key:'B',title:'غرفة (ب)',from:new Date(y,m,15),to:new Date(y,m+1,15)}];
+}
+function renderSubjects(){
+  $('subject-bar').innerHTML=SUBJECTS.map(s=>`<button class="chip ${s.id===activeSubject?'active':''}" data-subject-id="${s.id}">${s.name}</button>`).join('');
+  $('subject-bar').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{activeSubject=c.dataset.subjectId;renderSubjects();renderPublic()});
+}
+function renderPublic(){
+  $('public-rooms-list').innerHTML=publicRooms().map(r=>{
+    const mine=joined.find(j=>j.subject===activeSubject&&j.room===r.key);
+    const subjTaken=joined.some(j=>j.subject===activeSubject);
+    const countKey=`${activeSubject}_${r.key}`;
+    const members=Math.max(0, roomCounts[countKey] || 0);
+    let btn,tag;
+    if(mine){btn=`<button class="btn btn-danger" data-leave="${r.key}">مغادرة الغرفة</button>`;tag='<span class="badge emerald">أنت مشترك</span>'}
+    else if(subjTaken){btn='<button class="btn btn-ghost" disabled>مسجل بهذه المادة في غرفة أخرى</button>';tag=''}
+    else if(joined.length>=3){btn='<button class="btn btn-ghost" disabled>اكتملت المقاعد الـ 3</button>';tag=''}
+    else if(!hasMonthly()){btn=`<button class="btn btn-purple" data-join="${r.key}" data-type="monthly">انضمام (شهري)</button>`;tag='<span class="badge sky">امتحان شهري</span>'}
+    else{btn=`<button class="btn btn-primary" data-join="${r.key}" data-type="biweekly">نظام الأسبوعين (امتحان كل أسبوعين)</button>`;tag='<span class="badge sky">متبقي '+(MAX_BIWEEKLY-biCount())+' مقعد</span>'}
+    return `<article class="card room-card" id="public-room-${activeSubject}-${r.key}" data-room-key="${r.key}">
+      <div style="display:flex;justify-content:space-between;gap:8px"><h3>${subjName(activeSubject)} — ${r.title}</h3>${tag}</div>
+      <div class="room-meta">من ${dFmt(r.from)} إلى ${dFmt(r.to)}</div>
+      <div class="room-meta">الامتحان: من مالك المنصة · ${members} طالب</div>
+      <div class="room-actions">${btn}</div></article>`}).join('');
+
+  document.querySelectorAll('[data-join]').forEach(b=>b.onclick=async()=>{
+    if(!(await requireAuth()))return;
+    const roomKey=b.dataset.join, type=b.dataset.type;
+    joined.push({subject:activeSubject,room:roomKey,type,joinedAt:new Date().toISOString()});
+    const countKey=`${activeSubject}_${roomKey}`;
+    roomCounts[countKey]=(roomCounts[countKey]||0)+1;
+    refreshAll();
+    try {
+      await updateDoc(doc(db,"users",currentUser.uid),{joinedRooms:joined});
+      await setDoc(doc(db,"public_rooms_stats",countKey),{membersCount:increment(1)},{merge:true});
+      toast('تم الانضمام للغرفة');
+    } catch (e) { toast('حدث خطأ أثناء حفظ الاشتراك'); }
+  });
+
+  document.querySelectorAll('[data-leave]').forEach(b=>b.onclick=async()=>{
+    if(!(await requireAuth()))return;
+    const roomKey=b.dataset.leave;
+    joined=joined.filter(j=>!(j.subject===activeSubject&&j.room===roomKey));
+    const countKey=`${activeSubject}_${roomKey}`;
+    roomCounts[countKey]=Math.max(0,(roomCounts[countKey]||1)-1);
+    refreshAll();
+    try {
+      await updateDoc(doc(db,"users",currentUser.uid),{joinedRooms:joined});
+      await setDoc(doc(db,"public_rooms_stats",countKey),{membersCount:increment(-1)},{merge:true});
+      toast('غادرت الغرفة');
+    } catch (e) { toast('حدث خطأ أثناء تحديث الاشتراك'); }
+  });
+}
+
+/* ===== Private rooms ===== */
+function renderMyRooms(){
+  $('my-rooms-list').innerHTML=myRooms.length?myRooms.map(r=>{
+    const isOwner = currentUser && r.ownerUid === currentUser.uid;
+    return `
+    <article class="card room-card" data-my-room-id="${r.id}">
+      <div style="display:flex;justify-content:space-between;gap:8px"><h3>${esc(r.name)}</h3><span class="badge">${subjName(r.subject)}</span></div>
+      <div class="room-meta">${(r.tasks||[]).length} مهمة · الامتحان ${r.exam||'—'}</div>
+      <div class="room-meta">${r.examOwner==='platform'?'امتحان من مالك المنصة':'امتحان من مالك الغرفة'} · ${(r.members||[]).length} عضو</div>
+      <div class="room-actions">
+        ${isOwner ? `<button class="btn btn-ghost btn-sm" data-edit="${r.id}">⚙️ تعديل الإعدادات</button>` : '<span class="badge emerald">عضو مشارك</span>'}
+        <button class="btn btn-ghost btn-sm" data-share-room="${r.id}">🔗 نسخ رابط الدعوة</button>
+      </div>
+    </article>`;
+  }).join('')
+  :'<p class="empty">لم تنشئ أو تنضم لأي غرفة خاصة بعد.</p>';
+
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openRoomModal(b.dataset.edit));
+  document.querySelectorAll('[data-share-room]').forEach(b=>b.onclick=async()=>{
+    const url = `${location.origin}${location.pathname}?room=${b.dataset.shareRoom}`;
+    try { await navigator.clipboard.writeText(url); toast('تم نسخ رابط دعوة الغرفة'); }
+    catch { toast(url); }
+  });
+}
+
+/* ===== Room modal (إنشاء / تعديل) ===== */
+let editing=null,draft={tasks:[],subExams:[]};
+const ownerRadios=()=>document.querySelectorAll('[name=exam-owner]');
+function openModalEl(){$('modal-room').classList.add('open');$('modal-overlay').classList.add('open')}
+function closeModal(){$('modal-room').classList.remove('open');$('modal-overlay').classList.remove('open')}
+function renderDraft(){
+  $('room-task-list').innerHTML=draft.tasks.map((t,i)=>`<li><span>${esc(t.text)}</span>${t.locked?'<svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--muted)"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>':`<button class="btn btn-sm btn-ghost" data-rm-task="${i}" aria-label="حذف">✕</button>`}</li>`).join('');
+  $('subexam-list').innerHTML=draft.subExams.map((d,i)=>`<li><span>${d}</span><button class="btn btn-sm btn-ghost" data-rm-sub="${i}" aria-label="حذف">✕</button></li>`).join('');
+  document.querySelectorAll('[data-rm-task]').forEach(b=>b.onclick=()=>{draft.tasks.splice(+b.dataset.rmTask,1);renderDraft()});
+  document.querySelectorAll('[data-rm-sub]').forEach(b=>b.onclick=()=>{draft.subExams.splice(+b.dataset.rmSub,1);renderDraft()});
+}
+async function openRoomModal(id){
+  if(!(await requireAuth()))return;
+  editing=id?myRooms.find(r=>r.id===id):null;
+  const e=!!editing;
+  $('room-modal-title').textContent=e?'تعديل إعدادات الغرفة':'إنشاء غرفة خاصة';
+  $('btn-save-room').textContent=e?'حفظ التعديلات':'إنشاء الغرفة';
+  $('room-subject').innerHTML=SUBJECTS.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  $('room-name').value=e?editing.name:'';
+  $('room-subject').value=e?editing.subject:SUBJECTS[0].id;
+  $('room-start').value=e?editing.start:'';$('room-end').value=e?editing.end:'';$('room-exam').value=e?editing.exam:'';
+  ownerRadios().forEach(r=>{r.checked=r.value===(e?editing.examOwner:'platform');r.disabled=e});
+  $('room-subject').disabled=e;$('subject-lock').hidden=!e;$('owner-lock').hidden=!e;
+  $('tasks-lock').hidden=!e;$('tasks-note').hidden=e;
+  draft={tasks:(e?editing.tasks:[]).map(t=>({text:t,locked:true})),subExams:e?[...(editing.subExams||[])]:[]};
+  renderDraft();openModalEl();
+}
+function addTask(){const v=$('room-task-input').value.trim();if(!v)return;draft.tasks.push({text:v,locked:false});$('room-task-input').value='';renderDraft()}
+$('btn-add-room-task').onclick=addTask;
+$('room-task-input').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addTask()}};
+$('btn-add-subexam').onclick=()=>{const v=$('subexam-date').value;if(v&&!draft.subExams.includes(v)){draft.subExams.push(v);$('subexam-date').value='';renderDraft()}};
+$('btn-create-room').onclick=()=>openRoomModal(null);
+$('btn-cancel-room').onclick=closeModal;$('modal-overlay').onclick=closeModal;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+$('btn-save-room').onclick=async()=>{
+  if(!(await requireAuth()))return;
+  const name=$('room-name').value.trim();
+  if(!name){toast('اكتب اسم الغرفة');return}
+  if(!draft.tasks.length){toast('أضف مهمة واحدة على الأقل');return}
+  const s=$('room-start').value,en=$('room-end').value,ex=$('room-exam').value;
+  if(!s||!en||!ex){toast('حدد تاريخ البداية والنهاية والامتحان');return}
+  if(s>=en||en>ex){toast('تأكد أن البداية قبل النهاية وأن الامتحان بعدها');return}
+
+  const btn=$('btn-save-room');
+  btn.disabled=true;
+  try {
+    if (editing) {
+      // ضمان عدم حذف المهام السابقة برمجياً أيضاً
+      const mergedTasks = [...editing.tasks, ...draft.tasks.filter(t => !t.locked).map(t => t.text)];
+      const updates = { name, tasks: mergedTasks, start: s, end: en, exam: ex, subExams: [...draft.subExams] };
+      await updateDoc(doc(db, "private_rooms", editing.id), updates);
+      Object.assign(editing, updates);
+      toast('تم حفظ التعديلات');
+    } else {
+      const newRoom = {
+        ownerUid: currentUser.uid,
+        name,
+        subject: $('room-subject').value,
+        tasks: draft.tasks.map(t => t.text),
+        start: s,
+        end: en,
+        exam: ex,
+        subExams: [...draft.subExams],
+        examOwner: document.querySelector('[name=exam-owner]:checked').value,
+        members: [currentUser.uid],
+        createdAt: serverTimestamp()
+      };
+      const docRef = await addDoc(collection(db, "private_rooms"), newRoom);
+      myRooms.unshift({ id: docRef.id, ...newRoom });
+      toast('تم إنشاء الغرفة بنجاح');
+    }
+    closeModal();
+    renderMyRooms();
+  } catch (e) {
+    toast('تعذر حفظ الغرفة: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+function refreshAll(){renderSeats();renderPublic()}
+renderSeats();renderSubjects();renderPublic();renderMyRooms();
+</script>
+</body>
+</html>

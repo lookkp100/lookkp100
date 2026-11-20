@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منصة الواهس والتركيز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220; --surface:#111a2e; --surface-2:#18243d; --line:#243352;
+  --text:#e6ecf8; --muted:#8fa0c0;
+  --emerald:#34d399; --purple:#a78bfa; --sky:#38bdf8; --danger:#f87171;
+  --r-lg:20px; --r-md:12px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.7;min-height:100vh}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--r-md);font-weight:600;transition:.2s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--emerald);color:#052e22}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-ghost{background:var(--surface-2);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--sky)}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.4)}
+.btn-sm{padding:6px 12px;font-size:.85rem}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Topbar */
+#topbar{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#topbar .container{display:flex;align-items:center;gap:10px;height:64px}
+.brand{font-weight:700;font-size:1.05rem;margin-inline-end:auto;white-space:nowrap}
+.icon-btn{width:42px;height:42px;display:grid;place-items:center;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--line);flex:none}
+.icon-btn:hover{border-color:var(--sky)}
+#btn-bootcamp{background:var(--purple);color:#1e1147}
+.hide-sm{display:none}
+@media(min-width:640px){.hide-sm{display:inline}}
+
+/* Auth Banner */
+.auth-banner{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.auth-banner[hidden]{display:none}
+
+/* Drawer */
+#drawer-overlay,#modal-overlay{position:fixed;inset:0;background:rgba(3,7,18,.65);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+#drawer-overlay.open,#modal-overlay.open{opacity:1;pointer-events:auto}
+#sidebar-drawer{position:fixed;top:0;bottom:0;inset-inline-start:0;width:min(320px,86vw);background:var(--surface);border-inline-end:1px solid var(--line);transform:translateX(100%);transition:transform .28s;z-index:40;display:flex;flex-direction:column;padding:20px}
+#sidebar-drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--sky));display:grid;place-items:center;font-weight:700;color:#0b1220;flex:none}
+.drawer-link{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:var(--r-md);text-align:start;color:var(--text);text-decoration:none}
+.drawer-link:hover{background:var(--surface-2)}
+.drawer-footer{margin-top:auto;display:grid;gap:6px;border-top:1px solid var(--line);padding-top:12px}
+#btn-delete-account{color:var(--danger)}
+
+/* Hero + timers */
+.hero{padding:24px 0 8px}
+.hero h1{font-size:1.5rem}
+.hero p{color:var(--muted)}
+#timer-section{margin-top:20px}
+#timer-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:720px){#timer-modes{grid-template-columns:repeat(4,1fr)}}
+.timer-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;text-align:start;transition:.2s}
+.timer-card strong{display:block}
+.timer-card span{color:var(--muted);font-size:.85rem}
+.timer-card:hover{border-color:var(--muted)}
+.timer-card.active{border-color:var(--emerald);background:rgba(52,211,153,.08)}
+#timer-panel{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 16px;display:grid;justify-items:center;gap:16px}
+.ring-wrap{position:relative;width:min(260px,70vw);aspect-ratio:1}
+.ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{stroke:var(--surface-2)}
+#timer-ring{stroke:var(--emerald);stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .3s}
+#timer-panel.on-break #timer-ring{stroke:var(--sky)}
+.ring-label{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+#timer-display{font-size:2.8rem;font-weight:700;font-variant-numeric:tabular-nums;direction:ltr;line-height:1.1}
+#timer-phase{color:var(--muted)}
+#timer-message{max-width:420px;text-align:center;color:var(--purple);min-height:1.7em}
+.timer-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#custom-timer-box{display:none;align-items:center;gap:8px}
+#custom-timer-box.show{display:flex}
+#custom-minutes{width:90px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px;text-align:center}
+.auto-switch{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.9rem}
+input[type=checkbox]{accent-color:var(--emerald);width:18px;height:18px}
+
+/* Tasks */
+#tasks-section{margin:36px 0 60px}
+#tasks-section>h2{font-size:1.25rem;margin-bottom:12px}
+.tabs{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:4px;gap:4px}
+.tab{flex:1;padding:10px;border-radius:var(--r-sm);color:var(--muted);font-weight:600}
+.tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 -2px 0 var(--purple)}
+.tab-panel{display:none;margin-top:14px}
+.tab-panel.active{display:block}
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.progress-bar{flex:1;height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--emerald),var(--sky));transition:width .3s}
+.progress-pct{font-weight:700;min-width:44px;font-variant-numeric:tabular-nums}
+.subject-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.chip{padding:6px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.chip.active{border-color:var(--sky);color:var(--sky)}
+.bulk-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.chapter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:10px;padding:12px 14px}
+.chapter h3{font-size:1rem;margin-bottom:6px;color:var(--sky)}
+.topic{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer}
+.topic.done span{color:var(--muted);text-decoration:line-through}
+.add-row{display:flex;gap:8px;margin-bottom:12px}
+#custom-task-input,.field{flex:1;width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 14px}
+#custom-task-list{list-style:none;padding:0;display:grid;gap:8px}
+.custom-task{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 14px}
+.custom-task.done .task-title{color:var(--muted);text-decoration:line-through}
+.task-title{flex:1}
+.empty{color:var(--muted);text-align:center;padding:24px}
+
+/* Modals */
+.modal{position:fixed;inset-inline:16px;top:50%;transform:translateY(-46%);max-width:480px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;z-index:50;opacity:0;pointer-events:none;transition:.22s;max-height:85vh;overflow:auto}
+.modal.open{opacity:1;pointer-events:auto;transform:translateY(-50%)}
+.modal h2{margin-bottom:12px;font-size:1.15rem}
+.modal-actions{display:flex;gap:8px;justify-content:flex-start;margin-top:14px}
+#problem-list{list-style:none;padding:0;display:grid;gap:8px;margin-top:14px}
+.problem-item{background:var(--surface-2);border-radius:var(--r-md);padding:10px 14px;font-size:.92rem}
+.problem-item small{display:block;color:var(--muted)}
+#toast{position:fixed;bottom:20px;inset-inline:0;margin:0 auto;width:max-content;max-width:90vw;background:var(--surface-2);border:1px solid var(--emerald);padding:10px 18px;border-radius:99px;opacity:0;transition:.3s;z-index:60;pointer-events:none}
+#toast.show{opacity:1}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Topbar ===== -->
+<header id="topbar">
+  <div class="container">
+    <button class="icon-btn" id="btn-open-drawer" aria-label="فتح القائمة">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="brand">منصة الواهس والتركيز</div>
+    <button class="icon-btn" id="btn-problems-box" aria-label="صندوق المشاكل الدراسية">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+    </button>
+    <a class="btn btn-sm" id="btn-bootcamp" href="bootcamp.html">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M3 20h18M5 20V9l7-5 7 5v11M10 20v-6h4v6"/></svg>
+      <span>معسكر الدراسة <span class="hide-sm">والغرف</span></span>
+    </a>
+  </div>
+</header>
+
+<!-- ===== Drawer ===== -->
+<div id="drawer-overlay"></div>
+<aside id="sidebar-drawer" aria-label="القائمة الجانبية">
+  <div class="drawer-head">
+    <div class="avatar" id="drawer-avatar">ط</div>
+    <div>
+      <strong id="drawer-user-name">زائر</strong>
+      <div style="color:var(--muted);font-size:.85rem" id="drawer-user-sub">سجّل دخولك لحفظ تقدمك</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="btn-drawer-login" style="width:100%;justify-content:center;margin-bottom:10px">تسجيل الدخول بحساب Google</button>
+  <a class="drawer-link" id="link-profile" href="profile.html">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>الحساب الشخصي</a>
+  <a class="drawer-link" id="link-settings" href="profile.html#settings">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>الإعدادات</a>
+  <a class="drawer-link" id="link-privacy" href="profile.html#privacy">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>إعدادات الخصوصية</a>
+  <div class="drawer-footer" id="drawer-auth-footer" hidden>
+    <button class="drawer-link" id="btn-logout">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>تسجيل الخروج</button>
+    <button class="drawer-link" id="btn-delete-account">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>حذف الحساب</button>
+  </div>
+</aside>
+
+<main class="container">
+  <div class="auth-banner" id="guest-banner">
+    <span style="color:var(--muted);font-size:.9rem">سجّل دخولك بحساب Google لحفظ مهامك وتقدمك ومشاركتها مع أصدقائك.</span>
+    <button class="btn btn-primary btn-sm" id="btn-banner-login">تسجيل الدخول</button>
+  </div>
+
+  <section class="hero">
+    <h1>ابدأ جلسة تركيز</h1>
+    <p>اختر المؤقت الذي يناسب حالتك الآن.</p>
+  </section>
+
+  <!-- ===== Timers ===== -->
+  <section id="timer-section">
+    <div id="timer-modes" role="tablist"></div>
+    <div id="timer-panel">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54" fill="none" stroke-width="7"/><circle id="timer-ring" cx="60" cy="60" r="54" fill="none" stroke-width="7" stroke-dasharray="339.29" stroke-dashoffset="0"/></svg>
+        <div class="ring-label"><div id="timer-display">25:00</div><div id="timer-phase">وقت الدراسة</div></div>
+      </div>
+      <p id="timer-message"></p>
+      <div id="custom-timer-box">
+        <label for="custom-minutes">عدد الدقائق</label>
+        <input id="custom-minutes" type="number" min="1" max="180" value="30" inputmode="numeric">
+      </div>
+      <div class="timer-controls">
+        <button class="btn btn-primary" id="timer-start">ابدأ</button>
+        <button class="btn btn-ghost" id="timer-reset">إعادة</button>
+        <button class="btn btn-ghost" id="timer-skip">انتقال للاستراحة</button>
+      </div>
+      <label class="auto-switch"><input type="checkbox" id="auto-switch" checked>تبديل تلقائي بين الدراسة والاستراحة</label>
+    </div>
+  </section>
+
+  <!-- ===== Tasks ===== -->
+  <section id="tasks-section">
+    <h2>قائمة المهام الدراسية</h2>
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-platform-plan" data-tab="panel-platform-plan">خطة المنصة الجاهزة</button>
+      <button class="tab" id="tab-my-plan" data-tab="panel-my-plan">خطتي الخاصة</button>
+    </div>
+
+    <div class="tab-panel active" id="panel-platform-plan">
+      <div class="progress-row"><div class="progress-bar"><div class="progress-fill" id="platform-progress-fill"></div></div><span class="progress-pct" id="platform-progress-pct">0%</span></div>
+      <div class="subject-chips" id="subject-chips"></div>
+      <div class="bulk-actions">
+        <button class="btn btn-ghost btn-sm" id="btn-select-all">تحديد الكل</button>
+        <button class="btn btn-ghost btn-sm" id="btn-select-half">تحديد النصف</button>
+        <button class="btn btn-ghost btn-sm" id="btn-select-none">إلغاء التحديد</button>
+      </div>
+      <div id="chapters-list"></div>
+    </div>
+
+    <div class="tab-panel" id="panel-my-plan">
+      <div class="progress-row"><div class="progress-bar"><div class="progress-fill" id="custom-progress-fill"></div></div><span class="progress-pct" id="custom-progress-pct">0%</span></div>
+      <div class="add-row">
+        <input id="custom-task-input" placeholder="اكتب مهمة أو موضوعاً تريد إنجازه" maxlength="120">
+        <button class="btn btn-primary" id="btn-add-custom-task">إضافة</button>
+      </div>
+      <ul id="custom-task-list"></ul>
+    </div>
+  </section>
+</main>
+
+<!-- ===== Modals ===== -->
+<div id="modal-overlay"></div>
+
+<div class="modal" id="modal-problems" role="dialog" aria-label="صندوق المشاكل الدراسية">
+  <h2>صندوق المشاكل الدراسية</h2>
+  <textarea class="field" id="problem-input" rows="3" placeholder="اكتب مشكلتك الدراسية بالتفصيل"></textarea>
+  <div class="modal-actions">
+    <button class="btn btn-primary" id="btn-send-problem">إرسال المشكلة</button>
+    <button class="btn btn-ghost" data-close>إغلاق</button>
+  </div>
+  <ul id="problem-list"></ul>
+</div>
+
+<div class="modal" id="modal-delete" role="dialog" aria-label="تأكيد حذف الحساب">
+  <h2>حذف الحساب نهائياً؟</h2>
+  <p style="color:var(--muted)">ستُحذف بياناتك وتقدمك وغرفك ولا يمكن التراجع عن ذلك.</p>
+  <div class="modal-actions">
+    <button class="btn btn-danger" id="btn-confirm-delete">نعم، احذف حسابي</button>
+    <button class="btn btn-ghost" data-close>إلغاء</button>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {
+  auth, db, SUBJECTS_DATA,
+  loginWithGoogle, logoutUser, ensureUserDoc, deleteUserAccountCompletely,
+  onAuthStateChanged, doc, updateDoc, collection, addDoc, getDocs, query, where, serverTimestamp
+} from "./firebase-init.js";
+
+const TIMER_MODES = {
+  pomodoro:{id:'pomodoro',name:'البومودورو',desc:'25 دراسة + 5 استراحة',study:25,rest:5},
+  deep:{id:'deep',name:'التركيز العميق',desc:'50 دراسة + 10 استراحة',study:50,rest:10},
+  wahes:{id:'wahes',name:'كسر الواهس',desc:'5 دقائق فقط',study:5,rest:0,
+    message:'ادرس 5 دقائق واترك، وإذا صار عندك واهس كمل، وإذا لا اترك الدراسة شوي'},
+  custom:{id:'custom',name:'مؤقت مخصص',desc:'اختر الدقائق بنفسك',study:30,rest:0}
+};
+
+const SUBJECTS = SUBJECTS_DATA;
+let currentUser = null;
+let userProblems = [];
+const platformDone = new Set();
+let customTasks = [];
+let activeSubject = SUBJECTS[0].id;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400)}
+
+async function requireAuth() {
+  if (currentUser) return true;
+  try {
+    await loginWithGoogle();
+    return true;
+  } catch (e) {
+    toast('يرجى تسجيل الدخول بحساب Google أولاً');
+    return false;
+  }
+}
+
+async function syncTasksToCloud() {
+  if (!currentUser) return;
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      platformDone: [...platformDone],
+      customTasks
+    });
+  } catch (e) {
+    toast('تعذر حفظ التغييرات، تحقق من الاتصال');
+  }
+}
+
+/* ===== Auth State Listener ===== */
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    const data = await ensureUserDoc(user);
+    const name = data.displayName || user.displayName || "طالب السادس";
+    $('drawer-user-name').textContent = name;
+    $('drawer-user-sub').textContent = user.email || "السادس الإعدادي";
+    $('drawer-avatar').textContent = name[0];
+    $('btn-drawer-login').hidden = true;
+    $('guest-banner').hidden = true;
+    $('drawer-auth-footer').hidden = false;
+
+    platformDone.clear();
+    (data.platformDone || []).forEach(k => platformDone.add(k));
+    customTasks = data.customTasks || [];
+    renderPlatform();
+    renderCustom();
+    loadMyProblems();
+  } else {
+    $('drawer-user-name').textContent = "زائر";
+    $('drawer-user-sub').textContent = "سجّل دخولك لحفظ تقدمك";
+    $('drawer-avatar').textContent = "ط";
+    $('btn-drawer-login').hidden = false;
+    $('guest-banner').hidden = false;
+    $('drawer-auth-footer').hidden = true;
+    platformDone.clear();
+    customTasks = [];
+    userProblems = [];
+    renderPlatform();
+    renderCustom();
+    renderProblems();
+  }
+});
+
+$('btn-drawer-login').onclick = $('btn-banner-login').onclick = async () => {
+  try { await loginWithGoogle(); toast('تم تسجيل الدخول بنجاح'); }
+  catch (e) { toast('فشل تسجيل الدخول: ' + e.message); }
+};
+$('btn-logout').onclick = async () => {
+  await logoutUser(); closeDrawer(); toast('تم تسجيل الخروج');
+};
+
+/* ===== Drawer & modals ===== */
+const drawer=$('sidebar-drawer'),dOverlay=$('drawer-overlay'),mOverlay=$('modal-overlay');
+function openDrawer(){drawer.classList.add('open');dOverlay.classList.add('open')}
+function closeDrawer(){drawer.classList.remove('open');dOverlay.classList.remove('open')}
+function openModal(id){closeDrawer();$(id).classList.add('open');mOverlay.classList.add('open')}
+function closeModals(){document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'));mOverlay.classList.remove('open')}
+$('btn-open-drawer').onclick=openDrawer;
+dOverlay.onclick=closeDrawer;mOverlay.onclick=closeModals;
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModals);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModals()}});
+$('btn-problems-box').onclick=()=>openModal('modal-problems');
+$('btn-delete-account').onclick=()=>openModal('modal-delete');
+
+$('btn-confirm-delete').onclick = async () => {
+  if (!currentUser) return;
+  try {
+    await deleteUserAccountCompletely(currentUser);
+    closeModals();
+    toast('تم حذف حسابك نهائياً');
+  } catch (e) {
+    toast('حدث خطأ أثناء حذف الحساب: ' + e.message);
+  }
+};
+
+/* ===== Problems Box (Firestore) ===== */
+async function loadMyProblems() {
+  if (!currentUser) return;
+  const q = query(collection(db, "student_problems"), where("uid", "==", currentUser.uid));
+  const snap = await getDocs(q);
+  userProblems = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  renderProblems();
+}
+
+function renderProblems(){
+  $('problem-list').innerHTML = userProblems.length
+    ? userProblems.map(p => `<li class="problem-item" data-problem-id="${p.id}">${esc(p.text)}<small>${p.timeLabel || 'مرسلة للإدارة'}</small></li>`).join('')
+    : '<li class="empty" style="padding:12px">لم ترسل أي مشكلة دراسية بعد.</li>';
+}
+
+$('btn-send-problem').onclick = async () => {
+  if (!(await requireAuth())) return;
+  const v = $('problem-input').value.trim();
+  if (!v) { toast('اكتب المشكلة أولاً'); return; }
+  const btn = $('btn-send-problem');
+  btn.disabled = true;
+  try {
+    const docRef = await addDoc(collection(db, "student_problems"), {
+      uid: currentUser.uid,
+      userName: $('drawer-user-name').textContent,
+      text: v,
+      createdAt: serverTimestamp()
+    });
+    userProblems.unshift({ id: docRef.id, text: v, timeLabel: 'الآن' });
+    $('problem-input').value = '';
+    renderProblems();
+    toast('تم إرسال المشكلة بنجاح');
+  } catch (e) {
+    toast('تعذر إرسال المشكلة');
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+/* ===== Timer ===== */
+const CIRC=2*Math.PI*54;
+const T={mode:'pomodoro',phase:'study',remaining:25*60,total:25*60,running:false,iv:null};
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function renderModes(){
+  $('timer-modes').innerHTML=Object.values(TIMER_MODES).map(m=>
+    `<button class="timer-card ${m.id===T.mode?'active':''}" id="timer-card-${m.id}" data-mode="${m.id}" role="tab"><strong>${m.name}</strong><span>${m.desc}</span></button>`).join('');
+  document.querySelectorAll('.timer-card').forEach(c=>c.onclick=()=>setMode(c.dataset.mode));
+}
+function drawTimer(){
+  $('timer-display').textContent=fmt(T.remaining);
+  $('timer-ring').style.strokeDashoffset=CIRC*(1-T.remaining/T.total);
+  $('timer-phase').textContent=T.phase==='study'?'وقت الدراسة':'وقت الاستراحة';
+  $('timer-panel').classList.toggle('on-break',T.phase==='rest');
+  $('timer-start').textContent=T.running?'إيقاف مؤقت':'ابدأ';
+  const m=TIMER_MODES[T.mode];
+  $('timer-skip').style.display=(m.rest>0&&T.phase==='study')?'':'none';
+}
+function loadPhase(phase){
+  const m=TIMER_MODES[T.mode];
+  T.phase=phase;T.total=T.remaining=(phase==='study'?m.study:m.rest)*60;drawTimer();
+}
+function stopTimer(){clearInterval(T.iv);T.running=false}
+function setMode(id){
+  stopTimer();T.mode=id;
+  $('custom-timer-box').classList.toggle('show',id==='custom');
+  $('timer-message').textContent=TIMER_MODES[id].message||'';
+  renderModes();loadPhase('study');
+}
+function tick(){
+  T.remaining--;
+  if(T.remaining<=0){
+    stopTimer();const m=TIMER_MODES[T.mode];
+    if(T.phase==='study'&&m.rest>0){
+      loadPhase('rest');toast('انتهت الدراسة، وقت الاستراحة');
+      if($('auto-switch').checked)startTimer();
+    }else{
+      toast(T.phase==='rest'?'انتهت الاستراحة، جاهز للجولة التالية':'أحسنت! أنهيت الجلسة');
+      loadPhase('study');
+    }
+    return;
+  }
+  drawTimer();
+}
+function startTimer(){stopTimer();T.running=true;T.iv=setInterval(tick,1000);drawTimer()}
+$('timer-start').onclick=()=>{T.running?(stopTimer(),drawTimer()):startTimer()};
+$('timer-reset').onclick=()=>{stopTimer();loadPhase('study')};
+$('timer-skip').onclick=()=>{stopTimer();loadPhase('rest');if($('auto-switch').checked)startTimer()};
+$('custom-minutes').oninput=e=>{
+  const v=Math.min(180,Math.max(1,parseInt(e.target.value)||1));
+  TIMER_MODES.custom.study=v;if(T.mode==='custom'){stopTimer();loadPhase('study')}
+};
+
+/* ===== Tabs ===== */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===t.dataset.tab));
+});
+
+/* ===== Platform plan ===== */
+const subj=()=>SUBJECTS.find(s=>s.id===activeSubject);
+const keysOf=s=>s.chapters.flatMap(c=>c.topics.map((_,i)=>c.id+'|'+i));
+function renderPlatform(){
+  $('subject-chips').innerHTML=SUBJECTS.map(s=>`<button class="chip ${s.id===activeSubject?'active':''}" data-subject-id="${s.id}">${s.name}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{activeSubject=c.dataset.subjectId;renderPlatform()});
+  $('chapters-list').innerHTML=subj().chapters.map(c=>`
+    <div class="chapter" data-chapter-id="${c.id}"><h3>${c.name}</h3>
+    ${c.topics.map((t,i)=>{const k=c.id+'|'+i;return `<label class="topic ${platformDone.has(k)?'done':''}"><input type="checkbox" data-topic-key="${k}" ${platformDone.has(k)?'checked':''}><span>${t}</span></label>`}).join('')}</div>`).join('');
+  document.querySelectorAll('[data-topic-key]').forEach(cb=>cb.onchange=async()=>{
+    if(!(await requireAuth())){cb.checked=false;return;}
+    cb.checked?platformDone.add(cb.dataset.topicKey):platformDone.delete(cb.dataset.topicKey);
+    renderPlatform();syncTasksToCloud();
+  });
+  const all=keysOf(subj()),n=all.filter(k=>platformDone.has(k)).length,p=all.length?Math.round(n/all.length*100):0;
+  $('platform-progress-fill').style.width=p+'%';$('platform-progress-pct').textContent=p+'%';
+}
+$('btn-select-all').onclick=async()=>{if(!(await requireAuth()))return;keysOf(subj()).forEach(k=>platformDone.add(k));renderPlatform();syncTasksToCloud()};
+$('btn-select-none').onclick=async()=>{if(!(await requireAuth()))return;keysOf(subj()).forEach(k=>platformDone.delete(k));renderPlatform();syncTasksToCloud()};
+$('btn-select-half').onclick=async()=>{if(!(await requireAuth()))return;const k=keysOf(subj());k.forEach(x=>platformDone.delete(x));k.slice(0,Math.ceil(k.length/2)).forEach(x=>platformDone.add(x));renderPlatform();syncTasksToCloud()};
+
+/* ===== Custom plan ===== */
+function renderCustom(){
+  const list=$('custom-task-list');
+  list.innerHTML=customTasks.length?customTasks.map(t=>`
+    <li class="custom-task ${t.done?'done':''}" data-task-id="${t.id}">
+      <input type="checkbox" ${t.done?'checked':''} data-toggle="${t.id}" aria-label="تم">
+      <span class="task-title">${esc(t.title)}</span>
+      <button class="icon-btn" style="width:34px;height:34px" data-remove="${t.id}" aria-label="حذف المهمة"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join('')
+    :'<li class="empty">لا توجد مهام بعد. أضف أول موضوع تريد دراسته.</li>';
+  list.querySelectorAll('[data-toggle]').forEach(c=>c.onchange=async()=>{
+    if(!(await requireAuth()))return;
+    const t=customTasks.find(x=>x.id===c.dataset.toggle);t.done=c.checked;renderCustom();syncTasksToCloud();
+  });
+  list.querySelectorAll('[data-remove]').forEach(b=>b.onclick=async()=>{
+    if(!(await requireAuth()))return;
+    customTasks=customTasks.filter(x=>x.id!==b.dataset.remove);renderCustom();syncTasksToCloud();
+  });
+  const n=customTasks.filter(t=>t.done).length,p=customTasks.length?Math.round(n/customTasks.length*100):0;
+  $('custom-progress-fill').style.width=p+'%';$('custom-progress-pct').textContent=p+'%';
+}
+async function addCustom(){
+  if(!(await requireAuth()))return;
+  const v=$('custom-task-input').value.trim();if(!v)return;
+  customTasks.push({id:'t'+Date.now(),title:v,done:false});$('custom-task-input').value='';renderCustom();syncTasksToCloud();
+}
+$('btn-add-custom-task').onclick=addCustom;
+$('custom-task-input').onkeydown=e=>{if(e.key==='Enter')addCustom()};
+
+/* ===== Init ===== */
+renderModes();loadPhase('study');renderProblems();renderPlatform();renderCustom();
+</script>
+</body>
+</html>
